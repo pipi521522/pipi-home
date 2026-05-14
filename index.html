@@ -231,6 +231,44 @@
     .music-controls button:hover { background: rgba(255,110,180,0.4); box-shadow: 0 0 16px rgba(255,45,149,0.5); }
     .btn-play { width: 38px; height: 38px; font-size: 1rem; }
     .btn-skip { width: 28px; height: 28px; font-size: 0.85rem; }
+    .music-volume {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 6px;
+      color: rgba(255,255,255,0.7);
+      font-size: 0.9rem;
+    }
+    .volume-slider {
+      width: 80px;
+      height: 4px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: rgba(255,255,255,0.2);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+    .volume-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff2d95;
+      cursor: pointer;
+      box-shadow: 0 0 6px rgba(255,45,149,0.5);
+    }
+    .volume-slider::-moz-range-thumb {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #ff2d95;
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 6px rgba(255,45,149,0.5);
+    }
 
     /* Tags 卡片 */
     .tags-card {
@@ -1107,6 +1145,10 @@
           <button class="btn-play" id="play-btn" onclick="togglePlay()"><i class="mdi mdi-play" id="play-icon"></i></button>
           <button class="btn-skip" onclick="musicNext()"><i class="mdi mdi-skip-next"></i></button>
         </div>
+        <div class="music-volume">
+          <i class="mdi mdi-volume-medium" id="vol-icon"></i>
+          <input type="range" min="0" max="100" value="70" class="volume-slider" id="vol-slider" oninput="setVolume(this.value)">
+        </div>
         <audio id="audio-player"></audio>
       </div>
 
@@ -1717,6 +1759,32 @@ function musicNext() {
   loadTrack(trackIdx);
 }
 function toggleMusic() { togglePlay(); }
+
+// 设置音量
+function setVolume(val) {
+  const audio = document.getElementById('audio-player');
+  const volIcon = document.getElementById('vol-icon');
+  const v = val / 100;
+  audio.volume = v;
+  
+  // 更新音量图标
+  if (v === 0) {
+    volIcon.className = 'mdi mdi-volume-off';
+  } else if (v < 0.5) {
+    volIcon.className = 'mdi mdi-volume-low';
+  } else {
+    volIcon.className = 'mdi mdi-volume-medium';
+  }
+}
+
+// 初始化音量
+document.addEventListener('DOMContentLoaded', function() {
+  const audio = document.getElementById('audio-player');
+  const volSlider = document.getElementById('vol-slider');
+  if (audio && volSlider) {
+    audio.volume = volSlider.value / 100;
+  }
+});
 
 // 播放结束后自动切下一首
 document.getElementById('audio-player').addEventListener('ended', () => {
