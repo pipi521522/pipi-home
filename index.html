@@ -845,11 +845,12 @@
     }
     .project-subpage-thumb {
       width: 100%;
-      aspect-ratio: 16/9;
+      height: 100px;
       background: linear-gradient(135deg, #1a0030 0%, #4b0050 100%);
       border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 4rem;
+      font-size: 2.5rem;
+      flex-shrink: 0;
     }
     .project-subpage-body {
       display: flex;
@@ -1628,34 +1629,57 @@ const PLAYLIST = [];
 let trackIdx = 0;
 let isPlaying = false;
 let playlistReady = false;
-const PLAYLIST_SIZE = 30;
-const CORS = 'https://api.codetabs.com/v1/proxy?quest=';
+const PLAYLIST_SIZE = 20;
 
-// 获取热歌列表（Deezer 30秒预览，CDN直链无CORS问题）
+// 获取网易云热歌榜（国内可用）
 async function fetchPlaylist() {
   if (playlistReady) return;
-  document.getElementById('song-title').textContent = '🎵 加载中...';
-  document.getElementById('song-artist').textContent = '正在获取歌曲';
+  const titleEl = document.getElementById('song-title');
+  const artistEl = document.getElementById('song-artist');
+  if(titleEl) titleEl.textContent = '🎵 加载中...';
+  if(artistEl) artistEl.textContent = '正在获取歌曲';
+  
   try {
-    // 获取中文热歌
-    const url = encodeURIComponent('https://api.deezer.com/playlist/3167750882/tracks&limit=' + PLAYLIST_SIZE);
-    const resp = await fetch(CORS + url);
+    // 使用网易云热歌榜 API（国内可访问）
+    const resp = await fetch('https://api.imjad.cn/cloudmusic/?type=playlist&id=3778678&limit=' + PLAYLIST_SIZE);
     const data = await resp.json();
     PLAYLIST.length = 0;
-    (data.data || []).forEach(t => {
-      if (t.preview) {
-        PLAYLIST.push({ title: t.title, artist: t.artist.name, src: t.preview });
+    
+    (data.result.tracks || []).forEach(t => {
+      if (t.mp3Url) {
+        PLAYLIST.push({ title: t.name, artist: (t.artists||[{}])[0].name||'未知', src: t.mp3Url });
       }
     });
+    
     if (PLAYLIST.length > 0) {
       playlistReady = true;
       trackIdx = 0;
       loadTrack(0);
+    } else {
+      // 备用：使用内置免费音乐
+      loadFallbackMusic();
     }
   } catch(e) {
-    document.getElementById('song-title').textContent = '❌ 加载失败';
-    document.getElementById('song-artist').textContent = '请检查网络';
+    // API失败时加载备用音乐
+    loadFallbackMusic();
   }
+}
+
+// 备用免费音乐（API不可用时使用）
+function loadFallbackMusic() {
+  const fallbackList = [
+    { title: 'Creative Minds', artist: 'Benjamin Tissot', src: 'https://files.freemusicarchive.org/7318-Benjamin_Tissot-Better_Day.mp3' },
+    { title: 'Love Is Surrender', artist: 'Sophie Meiers', src: 'https://files.freemusicarchive.org/7791-Sophie_Meiers-Love_Is_Surrender.mp3' },
+    { title: 'Shipping Lanes', artist: 'Chad Crouch', src: 'https://files.freemusicarchive.org/4781-Chad_Crouch-Shipping_Lanes.mp3' }
+  ];
+  
+  PLAYLIST.length = 0;
+  fallbackList.forEach(t => PLAYLIST.push(t));
+  playlistReady = true;
+  trackIdx = 0;
+  loadTrack(0);
+  if(document.getElementById('song-title')) document.getElementById('song-title').textContent = '🎵 ' + fallbackList[0].title;
+  if(document.getElementById('song-artist')) document.getElementById('song-artist').textContent = fallbackList[0].artist;
 }
 
 function loadTrack(idx) {
