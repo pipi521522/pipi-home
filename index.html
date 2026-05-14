@@ -1,0 +1,1979 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>pipi的个人主页🎉</title>
+  <meta name="description" content="欢迎来到pipi的奇妙世界！" />
+  <meta name="keywords" content="pipi、个人主页、飞车" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@mdi/font@7.4.47/css/materialdesignicons.min.css"/>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --primary: #ff2d95;
+      --primary-light: #ff6eb4;
+      --accent: #00f0ff;
+      --accent2: #b400ff;
+      --bg-card: rgba(10,5,25,0.55);
+      --bg-card-hover: rgba(255,45,149,0.18);
+      --text-main: #ffffff;
+      --text-sub: rgba(255,255,255,0.7);
+      --border-r: 14px;
+      --shadow: 0 8px 32px rgba(255,45,149,0.25);
+    }
+
+    html, body {
+      width: 100%; height: 100%;
+      font-family: 'PingFang SC','Microsoft YaHei', sans-serif;
+      overflow: hidden;
+      background: #0f0a1e;
+    }
+
+    /* ── 动态视频背景 ── */
+    #bg-video {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      z-index: 0;
+    }
+    /* 备用渐变背景（视频加载失败时显示）*/
+    #bg-gradient {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 0;
+      background: linear-gradient(135deg, #0f0a2e 0%, #1a0a3e 25%, #2d1b69 50%, #1a0a3e 75%, #0f0a2e 100%);
+      background-size: 400% 400%;
+      animation: gradFlow 12s ease infinite;
+      display: none;
+    }
+    @keyframes gradFlow {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    .video-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      z-index: 1;
+      background: linear-gradient(135deg,
+        rgba(10,0,20,0.65) 0%,
+        rgba(180,0,255,0.18) 50%,
+        rgba(10,0,20,0.65) 100%);
+      backdrop-filter: blur(0px);
+    }
+
+    /* ── Canvas 粒子 ── */
+    #canvas-particles {
+      position: fixed;
+      top: 1.7%; left: 0.5%;
+      width: 99%; height: 96.6%;
+      border-radius: 16px;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* ── 主布局容器 ── */
+    .app-wrap {
+      position: fixed;
+      top: 1.7%; left: 0.5%;
+      width: 99%; height: 96.6%;
+      border-radius: 16px;
+      z-index: 3;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .app-wrap.hidden {
+      opacity: 0;
+      transform: scale(0.96);
+      pointer-events: none;
+    }
+
+    /* 顶部导航栏 */
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.6rem 1.2rem;
+      background: rgba(255,255,255,0.06);
+      backdrop-filter: blur(14px);
+      border-bottom: 1px solid rgba(255,45,149,0.25);
+      flex-shrink: 0;
+    }
+    .topbar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 1px;
+      text-shadow: 0 0 12px rgba(255,45,149,0.6);
+    }
+    .topbar-links a {
+      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.08);
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      transition: background 0.2s, box-shadow 0.2s;
+    }
+    .topbar-links a:hover { background: rgba(255,110,180,0.35); box-shadow: 0 0 12px rgba(255,45,149,0.4); }
+
+    /* 滑动开关 */
+    .float-switch {
+      position: fixed;
+      top: 4.5%;
+      right: 2%;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .float-switch label {
+      position: relative;
+      display: inline-block;
+      width: 44px; height: 24px;
+      cursor: pointer;
+    }
+    .float-switch input { opacity: 0; width: 0; height: 0; }
+    .float-switch .slider {
+      position: absolute; top:0;left:0;right:0;bottom:0;
+      background: rgba(255,255,255,0.25);
+      border-radius: 24px;
+      transition: .3s;
+    }
+    .float-switch .slider:before {
+      content:'';
+      position: absolute;
+      height: 18px; width: 18px;
+      left: 3px; bottom: 3px;
+      background: white;
+      border-radius: 50%;
+      transition: .3s;
+    }
+    .float-switch input:checked + .slider { background: var(--primary-light); }
+    .float-switch input:checked + .slider:before { transform: translateX(20px); }
+    .float-switch span { color: rgba(255,255,255,0.7); font-size: 0.75rem; text-shadow: 0 0 6px rgba(0,240,255,0.4); }
+    .float-switch span.mode-label { transition: color 0.3s; }
+    .float-switch input:checked ~ span.mode-label { color: var(--primary-light); text-shadow: 0 0 8px rgba(255,45,149,0.6); }
+
+    /* ── 主内容区域 ── */
+    .main-content {
+      flex: 1;
+      display: flex;
+      overflow: hidden;
+    }
+
+    /* 左侧个人信息栏 */
+    .sidebar {
+      width: 280px;
+      min-width: 240px;
+      max-width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.2rem 0.8rem 1rem;
+      gap: 0.7rem;
+      overflow-y: auto;
+      flex-shrink: 0;
+    }
+    .sidebar::-webkit-scrollbar { width: 4px; }
+    .sidebar::-webkit-scrollbar-track { background: transparent; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.4); border-radius:4px; }
+
+    /* 头像区域 */
+    .avatar-wrap {
+      position: relative;
+      width: 140px; height: 140px;
+      cursor: pointer;
+    }
+    .avatar-img {
+      width: 140px; height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid rgba(167,139,250,0.6);
+      box-shadow: 0 0 24px rgba(124,58,237,0.4), 0 0 0 6px rgba(167,139,250,0.15);
+      transition: transform 0.4s, box-shadow 0.4s;
+    }
+    .avatar-img:hover {
+      transform: scale(1.06);
+      box-shadow: 0 0 40px rgba(124,58,237,0.7), 0 0 0 8px rgba(167,139,250,0.25);
+    }
+    /* 头像下方音乐播放器 */
+    .music-player {
+      background: rgba(10,0,25,0.60);
+      backdrop-filter: blur(14px);
+      border-radius: 12px;
+      padding: 0.6rem 0.8rem;
+      width: 100%;
+      max-width: 260px;
+      text-align: center;
+      border: 1px solid rgba(255,45,149,0.30);
+      box-shadow: 0 0 18px rgba(255,45,149,0.15);
+    }
+    .music-title { font-size: 0.85rem; font-weight: 700; color: #fff; margin-bottom: 2px; text-shadow: 0 0 8px rgba(255,110,180,0.6); }
+    .music-artist { font-size: 0.72rem; color: var(--accent); margin-bottom: 8px; text-shadow: 0 0 6px rgba(0,240,255,0.4); }
+    .music-controls { display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .music-controls button {
+      background: rgba(255,255,255,0.10);
+      border: none; cursor: pointer;
+      border-radius: 50%;
+      color: #fff;
+      display:flex; align-items:center; justify-content:center;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 8px rgba(255,45,149,0.2);
+    }
+    .music-controls button:hover { background: rgba(255,110,180,0.4); box-shadow: 0 0 16px rgba(255,45,149,0.5); }
+    .btn-play { width: 38px; height: 38px; font-size: 1rem; }
+    .btn-skip { width: 28px; height: 28px; font-size: 0.85rem; }
+
+    /* Tags 卡片 */
+    .tags-card {
+      background: rgba(10,0,25,0.55);
+      backdrop-filter: blur(14px);
+      border-radius: var(--border-r);
+      border: 1px solid rgba(255,45,149,0.25);
+      padding: 0.8rem;
+      width: 100%;
+      max-width: 260px;
+      box-shadow: 0 0 14px rgba(255,45,149,0.10);
+    }
+    .tags-title { font-size: 0.85rem; color: var(--accent); margin-bottom: 8px; font-weight: 600; text-shadow: 0 0 6px rgba(0,240,255,0.5); }
+    .tags-list { display: flex; flex-wrap: wrap; gap: 6px; }
+    .tag-chip {
+      background: rgba(255,45,149,0.15);
+      border: 1px solid rgba(255,110,180,0.4);
+      color: #ffe0f0;
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+    }
+    .tag-chip:hover {
+      background: rgba(255,45,149,0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 16px rgba(255,45,149,0.4);
+    }
+
+    /* 时钟卡片 */
+    .clock-card {
+      background: rgba(10,0,25,0.55);
+      backdrop-filter: blur(14px);
+      border-radius: var(--border-r);
+      border: 1px solid rgba(0,240,255,0.25);
+      padding: 0.8rem 1rem;
+      width: 100%;
+      max-width: 260px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 0.2s, box-shadow 0.2s;
+      box-shadow: 0 0 14px rgba(0,240,255,0.10);
+    }
+    .clock-card:hover { background: rgba(10,0,25,0.70); box-shadow: 0 0 22px rgba(0,240,255,0.25); }
+    .clock-time {
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #fff;
+      letter-spacing: 3px;
+      font-variant-numeric: tabular-nums;
+      text-shadow: 0 0 12px rgba(0,240,255,0.7), 0 0 24px rgba(0,240,255,0.3);
+    }
+    .clock-date { font-size: 0.8rem; color: rgba(255,255,255,0.65); margin-top: 4px; text-shadow: 0 0 6px rgba(255,255,255,0.2); }
+    .clock-weather { display: flex; justify-content: center; gap: 8px; margin-top: 6px; font-size: 1.1rem; }
+
+
+    /* SVG 雷达图 */
+    .radar-wrap {
+      width: 100%;
+      max-width: 260px;
+      background: rgba(10,0,25,0.50);
+      border-radius: var(--border-r);
+      border: 1px solid rgba(180,0,255,0.25);
+      padding: 0.5rem;
+      display: flex;
+      justify-content: center;
+      box-shadow: 0 0 14px rgba(180,0,255,0.10);
+    }
+    .radar-svg { width: 120px; height: 120px; filter: drop-shadow(0 0 6px rgba(180,0,255,0.5)); }
+
+    /* ── 右侧主体区域 ── */
+    .content-area {
+      flex: 1;
+      padding: 1rem 1rem 1rem 0.5rem;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+    }
+    .content-area::-webkit-scrollbar-thumb { background: rgba(255,45,149,0.45); border-radius:4px; }
+    .main-content::-webkit-scrollbar { width: 4px; }
+    .main-content::-webkit-scrollbar-track { background: transparent; }
+    .main-content::-webkit-scrollbar-thumb { background: rgba(180,0,255,0.40); border-radius:4px; }
+    .sidebar::-webkit-scrollbar-thumb { background: rgba(255,45,149,0.40); border-radius:4px; }
+
+    /* 欢迎语 */
+    .welcome-text {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 0 16px rgba(255,45,149,0.7), 0 0 32px rgba(180,0,255,0.3);
+      letter-spacing: 1px;
+    }
+
+    /* ── 搜索框 ── */
+    .search-bar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(10,0,25,0.60);
+      backdrop-filter: blur(14px);
+      border-radius: 28px;
+      border: 1px solid rgba(255,45,149,0.30);
+      padding: 6px 6px 6px 8px;
+      max-width: 520px;
+      position: relative;
+      z-index: 50;
+      box-shadow: 0 0 18px rgba(255,45,149,0.12);
+    }
+    /* 搜索引擎选择器 */
+    .engine-selector {
+      position: relative;
+      flex-shrink: 0;
+    }
+    .engine-btn {
+      display: flex; align-items: center; gap: 5px;
+      background: rgba(255,45,149,0.18);
+      border: none; cursor: pointer;
+      border-radius: 20px;
+      padding: 4px 10px 4px 8px;
+      color: #fff;
+      font-size: 0.82rem;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      transition: background 0.2s, box-shadow 0.2s;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .engine-btn:hover { background: rgba(255,110,180,0.35); box-shadow: 0 0 12px rgba(255,45,149,0.3); }
+    .engine-btn .engine-icon { font-size: 1rem; line-height: 1; }
+    .engine-btn .engine-arrow {
+      font-size: 0.65rem;
+      transition: transform 0.2s;
+      opacity: 0.7;
+    }
+    .engine-btn.open .engine-arrow { transform: rotate(180deg); }
+    /* 下拉菜单 */
+    .engine-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 0;
+      min-width: 160px;
+      background: rgba(10,0,25,0.95);
+      backdrop-filter: blur(18px);
+      border: 1px solid rgba(255,45,149,0.35);
+      border-radius: 14px;
+      overflow: hidden;
+      z-index: 999;
+      box-shadow: 0 8px 32px rgba(255,45,149,0.20);
+      animation: dropdown-in 0.18s ease;
+    }
+    .engine-dropdown.show { display: block; }
+    @keyframes dropdown-in {
+      from { opacity: 0; transform: translateY(-6px) scale(0.97); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .engine-option {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 16px;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .engine-option:hover { background: rgba(255,45,149,0.20); }
+    .engine-option.active { background: rgba(255,45,149,0.30); color: #fff; font-weight: 600; }
+    .engine-option .opt-icon { font-size: 1.1rem; width: 22px; text-align: center; }
+    .engine-option .opt-name { flex: 1; }
+    .engine-option .opt-check { font-size: 0.8rem; color: var(--primary-light); }
+    /* 分隔线 */
+    .engine-divider {
+      height: 1px;
+      background: rgba(255,255,255,0.08);
+      margin: 2px 12px;
+    }
+    .search-input {
+      flex: 1; border: none; background: transparent;
+      color: #fff; font-size: 0.9rem;
+      outline: none;
+      min-width: 0;
+      text-shadow: 0 0 4px rgba(255,255,255,0.3);
+    }
+    .search-input::placeholder { color: rgba(255,255,255,0.40); }
+    .search-btn {
+      background: linear-gradient(135deg, var(--primary), var(--accent2));
+      border: none; cursor: pointer;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      display:flex; align-items:center; justify-content:center;
+      color: #fff; font-size: 1rem;
+      transition: box-shadow 0.2s, transform 0.15s;
+      flex-shrink: 0;
+      box-shadow: 0 0 12px rgba(255,45,149,0.4);
+    }
+    .search-btn:hover { box-shadow: 0 0 22px rgba(255,45,149,0.7); transform: scale(1.08); }
+
+    /* 格言 */
+    .motto {
+      font-size: 1.05rem;
+      color: rgba(255,255,255,0.85);
+      letter-spacing: 2px;
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+    .motto-char {
+      display: inline-block;
+      animation: float-char 3s ease-in-out infinite;
+    }
+    .motto-char:nth-child(1) { animation-delay: 0s; }
+    .motto-char:nth-child(2) { animation-delay: 0.15s; }
+    .motto-char:nth-child(3) { animation-delay: 0.3s; }
+    .motto-char:nth-child(4) { animation-delay: 0.45s; }
+    .motto-char:nth-child(5) { animation-delay: 0.6s; }
+    .motto-char:nth-child(6) { animation-delay: 0.75s; }
+    .motto-char:nth-child(7) { animation-delay: 0.9s; }
+    .motto-sep { color: rgba(255,255,255,0.35); font-size: 1.2rem; }
+    @keyframes float-char {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-4px); }
+    }
+
+    /* 项目卡片区 */
+    .section-label {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: rgba(255,45,149,0.12);
+      border: 1px solid rgba(255,45,149,0.30);
+      color: #ffd0e8;
+      border-radius: 20px;
+      padding: 4px 14px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      text-shadow: 0 0 8px rgba(255,110,180,0.4);
+    }
+    .projects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 10px;
+    }
+    .project-card {
+      background: rgba(10,0,25,0.60);
+      backdrop-filter: blur(14px);
+      border-radius: var(--border-r);
+      border: 1px solid rgba(255,45,149,0.20);
+      overflow: hidden;
+      transition: transform 0.25s, box-shadow 0.25s, background 0.25s;
+      cursor: pointer;
+      box-shadow: 0 0 12px rgba(255,45,149,0.08);
+    }
+    .project-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 36px rgba(255,45,149,0.25);
+      background: rgba(255,45,149,0.10);
+    }
+    .project-thumb {
+      width: 100%; aspect-ratio: 16/9;
+      object-fit: cover;
+      opacity: 0.82;
+      display: block;
+      background: linear-gradient(135deg, #1a0030 0%, #4b0050 100%);
+    }
+    .project-thumb-placeholder {
+      width: 100%; aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #1a0030 0%, #4b0050 100%);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2rem;
+    }
+    .project-body { padding: 0.45rem 0.7rem 0; }
+    .project-title {
+      font-size: 0.95rem; font-weight: 700;
+      color: #fff; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+      text-shadow: 0 0 6px rgba(255,255,255,0.2);
+    }
+    .project-sub {
+      font-size: 0.72rem; color: rgba(255,255,255,0.55);
+      margin-top: 2px; white-space: nowrap;
+      overflow: hidden; text-overflow: ellipsis;
+    }
+    .project-edit-btn {
+      position: absolute;
+      top: 6px; right: 6px;
+      background: rgba(255,45,149,0.55);
+      border: 1px solid rgba(255,45,149,0.7);
+      color: #fff;
+      border-radius: 6px;
+      width: 26px; height: 26px;
+      display: none; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 0.72rem;
+      transition: opacity 0.2s, background 0.2s;
+      z-index: 5;
+    }
+    .project-card { position: relative; }
+    body.admin-mode .project-edit-btn { display: flex; opacity: 1; }
+    body.admin-mode .project-edit-btn:hover {
+      background: rgba(255,45,149,0.85);
+      box-shadow: 0 0 10px rgba(255,45,149,0.5);
+    }
+    body.admin-mode .project-edit-save { display: none; }
+    body.admin-mode .project-card.editing .project-edit-save { display: flex; }
+    body.admin-mode .project-card.editing .project-edit-btn { display: none; }
+    .project-title[contenteditable="true"] {
+      outline: 1px dashed rgba(255,45,149,0.7);
+      background: rgba(255,45,149,0.10);
+      border-radius: 4px;
+      padding: 1px 4px;
+      margin: -1px -4px;
+    }
+    .project-sub[contenteditable="true"] {
+      outline: 1px dashed rgba(0,240,255,0.7);
+      background: rgba(0,240,255,0.10);
+      border-radius: 4px;
+      padding: 1px 4px;
+      margin: -1px -4px;
+    }
+    .project-edit-save {
+      position: absolute;
+      top: 6px; right: 36px;
+      background: rgba(0,200,100,0.65);
+      border: 1px solid rgba(0,200,100,0.8);
+      color: #fff;
+      border-radius: 6px;
+      width: 26px; height: 26px;
+      display: none; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 0.72rem;
+      z-index: 5;
+    }
+    .project-card.editing .project-edit-save { display: flex; }
+    .project-card.editing .project-edit-btn { display: none; }
+
+    .project-actions {
+      display: flex; align-items: center;
+      padding: 0 0.5rem; height: 2.4rem;
+      gap: 6px;
+    }
+    .project-link {
+      color: var(--primary-light); font-size: 0.8rem;
+      text-decoration: none; flex: 1;
+      transition: color 0.2s;
+      text-shadow: 0 0 6px rgba(255,110,180,0.3);
+    }
+    .project-link:hover { color: #fff; text-shadow: 0 0 12px rgba(255,110,180,0.6); }
+    .project-download {
+      background: rgba(0,240,255,0.12);
+      border: 1px solid rgba(0,240,255,0.35);
+      color: var(--accent);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 3px;
+      white-space: nowrap;
+    }
+    .project-download:hover {
+      background: rgba(0,240,255,0.25);
+      box-shadow: 0 0 10px rgba(0,240,255,0.3);
+      color: #fff;
+    }
+    .project-download.disabled {
+      opacity: 0.35;
+      cursor: not-allowed;
+      border-color: rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.4);
+    }
+    .project-open {
+      background: none;
+      border: 1px solid rgba(255,45,149,0.35);
+      color: var(--primary-light);
+      border-radius: 6px;
+      width: 28px; height: 28px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: all 0.2s;
+    }
+    .project-open:hover {
+      background: rgba(255,45,149,0.22);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(255,45,149,0.3);
+    }
+    .project-expand {
+      background: none; border: none; cursor: pointer;
+      color: rgba(255,255,255,0.5); font-size: 1.1rem;
+      transition: transform 0.2s, color 0.2s;
+      padding: 4px;
+    }
+    .project-expand.open { transform: rotate(180deg); color: #fff; }
+    .project-detail {
+      display: none;
+      border-top: 1px solid rgba(255,255,255,0.12);
+      padding: 0.5rem 0.7rem;
+      font-size: 0.78rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.5;
+    }
+    .project-detail.show { display: block; }
+
+    /* 滚动条美化 */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(167,139,250,0.35); border-radius: 5px; }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .sidebar { width: 100%; max-width: 100%; flex-direction: row; flex-wrap: wrap; justify-content: center; padding: 0.6rem; }
+      .main-content { flex-direction: column; }
+      .avatar-wrap { width: 90px; height: 90px; }
+      .avatar-img { width: 90px; height: 90px; }
+    }
+
+    /* ── 管理入口按钮 ── */
+    .admin-entry {
+      position: fixed;
+      bottom: 18px; left: 18px;
+      z-index: 20;
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: rgba(10,0,25,0.6);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255,45,149,0.3);
+      color: rgba(255,255,255,0.6);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.25s;
+      box-shadow: 0 0 10px rgba(255,45,149,0.15);
+    }
+    .admin-entry:hover {
+      color: #fff;
+      border-color: var(--primary-light);
+      box-shadow: 0 0 18px rgba(255,45,149,0.45);
+      transform: rotate(45deg);
+    }
+    body.admin-mode .admin-entry {
+      border-color: rgba(0,240,255,0.6);
+      color: var(--accent);
+      box-shadow: 0 0 14px rgba(0,240,255,0.3);
+    }
+    body.admin-mode .admin-entry:hover {
+      color: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 22px rgba(0,240,255,0.5);
+      transform: rotate(45deg);
+    }
+
+    /* ── 弹窗通用 ── */
+    .modal-mask {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.6);
+      z-index: 100;
+      justify-content: center; align-items: center;
+      backdrop-filter: blur(4px);
+    }
+    .modal-mask.show { display: flex; }
+    .modal-box {
+      background: rgba(10,5,30,0.95);
+      border: 1px solid rgba(255,45,149,0.35);
+      border-radius: 16px;
+      padding: 1.5rem;
+      min-width: 320px; max-width: 500px; width: 90%;
+      max-height: 80vh; overflow-y: auto;
+      box-shadow: 0 0 40px rgba(255,45,149,0.2), 0 0 80px rgba(180,0,255,0.1);
+      animation: modal-in 0.25s ease;
+    }
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.92) translateY(12px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-title {
+      font-size: 1.05rem; font-weight: 700;
+      color: #fff; margin-bottom: 1rem;
+      text-shadow: 0 0 10px rgba(255,45,149,0.5);
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .modal-close {
+      background: none; border: none; color: rgba(255,255,255,0.5);
+      font-size: 1.3rem; cursor: pointer;
+      transition: color 0.2s;
+    }
+    .modal-close:hover { color: #fff; }
+
+    /* 密码输入 */
+    .pwd-wrap { display: flex; gap: 8px; margin-bottom: 1rem; }
+    .pwd-input {
+      flex: 1; padding: 8px 12px;
+      border-radius: 8px; border: 1px solid rgba(255,45,149,0.3);
+      background: rgba(255,255,255,0.06);
+      color: #fff; font-size: 0.9rem;
+      outline: none; letter-spacing: 2px;
+    }
+    .pwd-input:focus { border-color: var(--primary-light); box-shadow: 0 0 10px rgba(255,45,149,0.3); }
+    .pwd-btn {
+      padding: 8px 16px; border-radius: 8px;
+      background: linear-gradient(135deg, var(--primary), var(--accent2));
+      border: none; color: #fff; font-weight: 600;
+      cursor: pointer; transition: box-shadow 0.2s;
+    }
+    .pwd-btn:hover { box-shadow: 0 0 14px rgba(255,45,149,0.5); }
+    .pwd-error { color: #ff4444; font-size: 0.78rem; margin-top: 4px; display: none; }
+    .pwd-error.show { display: block; }
+
+    /* 文件列表 */
+    .file-list { display: flex; flex-direction: column; gap: 6px; }
+    .file-item {
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px; padding: 8px 12px;
+      transition: background 0.2s;
+    }
+    .file-item:hover { background: rgba(255,45,149,0.1); }
+    .file-icon { font-size: 1.2rem; flex-shrink: 0; }
+    .file-info { flex: 1; min-width: 0; }
+    .file-name {
+      font-size: 0.84rem; color: #fff; font-weight: 600;
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .file-meta { font-size: 0.7rem; color: rgba(255,255,255,0.45); }
+    .file-del {
+      background: rgba(255,45,149,0.15); border: 1px solid rgba(255,45,149,0.3);
+      color: #ff6eb4; border-radius: 6px;
+      padding: 4px 10px; font-size: 0.72rem;
+      cursor: pointer; transition: all 0.2s; flex-shrink: 0;
+    }
+    .file-del:hover { background: rgba(255,45,149,0.35); color: #fff; }
+    .file-del.disabled { opacity: 0.3; cursor: not-allowed; }
+    .file-del { display: none; }
+    body.admin-mode .file-del { display: flex; }
+    .no-files {
+      text-align: center; padding: 1.5rem;
+      color: rgba(255,255,255,0.4); font-size: 0.85rem;
+    }
+
+    /* 上传指引 */
+    .upload-guide {
+      background: rgba(0,240,255,0.06);
+      border: 1px solid rgba(0,240,255,0.2);
+      border-radius: 10px; padding: 10px 14px;
+      margin-top: 12px;
+    }
+    .upload-guide-title { color: var(--accent); font-size: 0.8rem; font-weight: 600; margin-bottom: 4px; }
+    .upload-guide p { color: rgba(255,255,255,0.6); font-size: 0.75rem; line-height: 1.6; }
+    .upload-guide code {
+      background: rgba(255,255,255,0.08);
+      padding: 1px 5px; border-radius: 4px;
+      color: var(--primary-light); font-size: 0.72rem;
+    }
+
+    /* 操作日志 */
+    .admin-log {
+      margin-top: 10px; padding: 8px 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px; max-height: 100px; overflow-y: auto;
+      font-size: 0.7rem; color: rgba(255,255,255,0.5);
+      display: none;
+    }
+    .admin-log.show { display: block; }
+    .admin-log-entry { padding: 2px 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .admin-log-time { color: rgba(255,255,255,0.3); margin-right: 6px; }
+
+
+    /* ── 项目二级子页面 ── */
+    .project-subpage {
+      position: fixed;
+      top: 1.7%; left: 0.5%;
+      width: 99%; height: 96.6%;
+      background: rgba(8,2,20,0.97);
+      backdrop-filter: blur(22px);
+      z-index: 50;
+      transform: translateX(100%);
+      opacity: 0;
+      transition: transform 0.42s cubic-bezier(0.22,1,0.36,1), opacity 0.3s;
+      border-radius: 16px;
+      overflow-y: auto;
+      pointer-events: none;
+    }
+    .project-subpage.show {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+    .project-subpage-inner {
+      padding: 1.8rem 2rem;
+      min-height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+    }
+    .project-subpage-back {
+      align-self: flex-start;
+      background: rgba(255,45,149,0.18);
+      border: 1px solid rgba(255,45,149,0.4);
+      color: var(--primary-light);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      display: flex; align-items: center; gap: 5px;
+    }
+    .project-subpage-back:hover {
+      background: rgba(255,45,149,0.35);
+    }
+    .project-subpage-thumb {
+      width: 100%;
+      aspect-ratio: 16/9;
+      background: linear-gradient(135deg, #1a0030 0%, #4b0050 100%);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 4rem;
+    }
+    .project-subpage-body {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .project-subpage-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      text-shadow: 0 0 16px rgba(255,45,149,0.5);
+    }
+    .project-subpage-sub {
+      font-size: 0.85rem;
+      color: var(--accent);
+      opacity: 0.8;
+    }
+    .project-subpage-desc {
+      font-size: 0.92rem;
+      color: rgba(255,255,255,0.72);
+      line-height: 1.7;
+      margin-top: 0.5rem;
+    }
+    .project-subpage-actions {
+      display: flex;
+      gap: 10px;
+      margin-top: 1rem;
+    }
+    .project-subpage-link {
+      background: rgba(255,45,149,0.22);
+      border: 1px solid rgba(255,45,149,0.5);
+      color: var(--primary-light);
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 0.88rem;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 5px;
+      transition: all 0.2s;
+    }
+    .project-subpage-link:hover {
+      background: rgba(255,45,149,0.4);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(255,45,149,0.35);
+    }
+    .project-subpage-download {
+      background: rgba(0,240,255,0.15);
+      border: 1px solid rgba(0,240,255,0.4);
+      color: var(--accent);
+      border-radius: 8px;
+      padding: 8px 18px;
+      font-size: 0.88rem;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 5px;
+      transition: all 0.2s;
+    }
+    .project-subpage-download:hover {
+      background: rgba(0,240,255,0.3);
+      color: #fff;
+      box-shadow: 0 0 14px rgba(0,240,255,0.35);
+    }
+
+    .project-subpage-tools {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      animation: fadeUp 0.35s ease;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .project-subpage-tools-title {
+      font-size: 0.92rem;
+      font-weight: 700;
+      color: var(--primary-light);
+      display: flex; align-items: center; gap: 5px;
+    }
+    .project-subpage-tools-list {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    .tool-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,45,149,0.18);
+      border-radius: 8px;
+      padding: 7px 12px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    .tool-item:hover {
+      background: rgba(255,45,149,0.12);
+      border-color: rgba(255,45,149,0.4);
+    }
+    .tool-item-name {
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.85);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: 70%;
+    }
+    .tool-item-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .tool-item-size {
+      font-size: 0.72rem;
+      color: rgba(0,240,255,0.7);
+      background: rgba(0,240,255,0.08);
+      border-radius: 4px;
+      padding: 1px 6px;
+    }
+    .tool-item-dl {
+      background: rgba(0,240,255,0.12);
+      border: 1px solid rgba(0,240,255,0.3);
+      color: var(--accent);
+      border-radius: 6px;
+      padding: 3px 10px;
+      font-size: 0.72rem;
+      text-decoration: none;
+      display: flex; align-items: center; gap: 3px;
+      transition: all 0.2s;
+    }
+    .tool-item-dl:hover {
+      background: rgba(0,240,255,0.28);
+      color: #fff;
+      box-shadow: 0 0 10px rgba(0,240,255,0.3);
+    }
+    .project-subpage-download.disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- 动态视频背景 -->
+  <video id="bg-video" autoplay muted loop playsinline>
+    <source src="bg-video.mp4" type="video/mp4">
+  </video>
+  <div class="video-overlay"></div>
+
+<!-- Canvas 粒子 -->
+<canvas id="canvas-particles"></canvas>
+
+<!-- 管理入口按钮 -->
+<button class="admin-entry" onclick="openAdminModal()" title="文件管理">&#9881;</button>
+
+<!-- 密码弹窗 -->
+<div class="modal-mask" id="pwd-modal">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span>&#128274; 管理验证</span>
+      <button class="modal-close" onclick="closePwdModal()">&#10005;</button>
+    </div>
+    <div class="pwd-wrap">
+      <input class="pwd-input" id="pwd-input" type="password" placeholder="请输入管理密码" onkeydown="if(event.key==='Enter')checkAdminPwd()" />
+      <button class="pwd-btn" onclick="checkAdminPwd()">确认</button>
+    </div>
+    <div class="pwd-error" id="pwd-error">密码错误，请重试</div>
+  </div>
+</div>
+
+<!-- 管理面板弹窗 -->
+<div class="modal-mask" id="admin-modal">
+  <div class="modal-box">
+    <div class="modal-title">
+      <span>&#128193; 文件管理</span>
+      <div style="display:flex;gap:6px;">
+        <button class="modal-close" onclick="exitAdminMode()" title="退出编辑模式" style="font-size:0.72rem;color:rgba(0,240,255,0.7);">退出编辑</button>
+        <button class="modal-close" onclick="closeAdminModal()">&#10005;</button>
+      </div>
+    </div>
+
+    <!-- Token 输入 -->
+    <div id="token-section" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.08);">
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="password" id="token-input" placeholder="GitHub Personal Access Token" style="flex:1;padding:6px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.15);background:rgba(255,255,255,0.05);color:#fff;font-size:0.75rem;outline:none;">
+        <button onclick="saveToken()" style="padding:6px 14px;border-radius:6px;border:none;background:var(--accent,#00f0ff);color:#000;font-size:0.75rem;cursor:pointer;font-weight:600;">保存</button>
+      </div>
+      <div id="token-status" style="font-size:0.7rem;margin-top:4px;min-height:1em;"></div>
+    </div>
+
+    <!-- 上传区域 -->
+    <div id="upload-section" style="padding:8px 12px;border-bottom:1px solid rgba(255,255,255,0.08);">
+      <div style="display:flex;gap:6px;align-items:center;">
+        <input type="file" id="file-input" style="flex:1;font-size:0.75rem;color:#fff;background:transparent;border:none;">
+        <button onclick="uploadFile()" style="padding:6px 14px;border-radius:6px;border:none;background:var(--primary,#ff2d95);color:#fff;font-size:0.75rem;cursor:pointer;font-weight:600;white-space:nowrap;">上传文件</button>
+      </div>
+      <div id="upload-status" style="font-size:0.7rem;margin-top:4px;min-height:1em;"></div>
+    </div>
+
+    <!-- 文件列表 -->
+    <div class="file-list" id="file-list"></div>
+    <div class="admin-log" id="admin-log"></div>
+  </div>
+</div>
+
+
+<!-- 浮动开关 -->
+<div class="float-switch">
+  <label>
+    <input type="checkbox" id="video-switch" onchange="toggleVideo(this)"/>
+    <span class="slider"></span>
+  </label>
+  <span class="mode-label" id="mode-label">沉浸模式</span>
+</div>
+
+<!-- 主容器 -->
+<div class="app-wrap">
+  <!-- 顶部导航 -->
+  <div class="topbar">
+    <div class="topbar-title">Hi, I'm pipi</div>
+    <div class="topbar-links">
+      <a href="https://github.com/pipi521522" target="_blank" title="GitHub">
+        <i class="mdi mdi-github"></i>
+      </a>
+      <a href="#" title="QQ">
+        <i class="mdi mdi-qqchat"></i>
+      </a>
+      <a href="#" title="微信">
+        <i class="mdi mdi-wechat"></i>
+      </a>
+      <a href="#" title="邮箱">
+        <i class="mdi mdi-email"></i>
+      </a>
+      <a href="#" title="B站">
+        <i class="mdi mdi-television-play"></i>
+      </a>
+    </div>
+  </div>
+
+  <!-- 主体 -->
+  <div class="main-content">
+    <!-- 左侧边栏 -->
+    <div class="sidebar">
+      <!-- 头像 -->
+      <div class="avatar-wrap" onclick="toggleMusic()">
+        <img class="avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=pipi521522" alt="pipi头像" onerror="this.src='https://ui-avatars.com/api/?name=pipi&background=7c3aed&color=fff&size=140&rounded=true'" />
+      </div>
+
+      <!-- 音乐播放器 -->
+      <div class="music-player">
+        <div class="music-title" id="song-title">🎵 加载中...</div>
+        <div class="music-artist" id="song-artist">请稍候</div>
+        <div class="music-controls">
+          <button class="btn-skip" onclick="musicPrev()"><i class="mdi mdi-skip-previous"></i></button>
+          <button class="btn-play" id="play-btn" onclick="togglePlay()"><i class="mdi mdi-play" id="play-icon"></i></button>
+          <button class="btn-skip" onclick="musicNext()"><i class="mdi mdi-skip-next"></i></button>
+        </div>
+        <audio id="audio-player"></audio>
+      </div>
+
+      <!-- Tags -->
+      <div class="tags-card">
+        <div class="tags-title">Tags</div>
+        <div class="tags-list">
+          <span class="tag-chip">🏎️ 飞车老玩家</span>
+          <span class="tag-chip">💻 代码达人</span>
+          <span class="tag-chip">⚡ 极速追风</span>
+          <span class="tag-chip">🔧 逆向爱好者</span>
+          <span class="tag-chip">🎮 游戏er</span>
+          <span class="tag-chip">🌙 深夜码工</span>
+          <span class="tag-chip">🚀 热爱技术</span>
+          <span class="tag-chip">😎 随心所欲</span>
+        </div>
+      </div>
+
+      <!-- 时钟 -->
+      <div class="clock-card" onclick="this.style.background='rgba(255,255,255,0.22)'; setTimeout(()=>this.style.background='',300)">
+        <div class="clock-time" id="clock-time">00:00:00</div>
+        <div class="clock-date" id="clock-date">2026 年 05 月 15 日 星期五</div>
+        <div class="clock-weather">
+          <span title="晴天">☀️</span>
+          <span title="气温">🌡️</span>
+          <span title="风">🌬️</span>
+          <span title="飞车时间">🏎️</span>
+          <span title="开心">😊</span>
+        </div>
+      </div>
+
+      <!-- 雷达图 -->
+      <div class="radar-wrap">
+        <svg class="radar-svg" viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg">
+          <!-- 背景网格 -->
+          <polygon points="60,10 110,37.5 110,82.5 60,110 10,82.5 10,37.5" fill="none" stroke="rgba(180,0,255,0.30)" stroke-width="1"/>
+          <polygon points="60,22 97.5,43 97.5,77 60,98 22.5,77 22.5,43" fill="none" stroke="rgba(180,0,255,0.22)" stroke-width="1"/>
+          <polygon points="60,35 85,49.5 85,70.5 60,85 35,70.5 35,49.5" fill="none" stroke="rgba(180,0,255,0.15)" stroke-width="1"/>
+          <!-- 轴线 -->
+          <line x1="60" y1="10" x2="60" y2="110" stroke="rgba(180,0,255,0.25)" stroke-width="1"/>
+          <line x1="10" y1="37.5" x2="110" y2="82.5" stroke="rgba(180,0,255,0.25)" stroke-width="1"/>
+          <line x1="110" y1="37.5" x2="10" y2="82.5" stroke="rgba(180,0,255,0.25)" stroke-width="1"/>
+          <!-- 数据区 -->
+          <polygon points="60,15 105,42 100,78 60,100 20,78 22,42"
+            fill="rgba(255,45,149,0.35)" stroke="#ff2d95" stroke-width="1.5"/>
+          <!-- 数据点 -->
+          <circle cx="60" cy="15" r="3" fill="#ff2d95"/>
+          <circle cx="105" cy="42" r="3" fill="#ff2d95"/>
+          <circle cx="100" cy="78" r="3" fill="#ff2d95"/>
+          <circle cx="60" cy="100" r="3" fill="#ff2d95"/>
+          <circle cx="20" cy="78" r="3" fill="#ff2d95"/>
+          <circle cx="22" cy="42" r="3" fill="#ff2d95"/>
+          <!-- 标签 -->
+          <text x="60" y="8" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.7)">飞车</text>
+          <text x="113" y="41" text-anchor="start" font-size="8" fill="rgba(255,255,255,0.7)">代码</text>
+          <text x="103" y="85" text-anchor="start" font-size="8" fill="rgba(255,255,255,0.7)">逆向</text>
+          <text x="60" y="116" text-anchor="middle" font-size="8" fill="rgba(255,255,255,0.7)">游戏</text>
+          <text x="7" y="85" text-anchor="end" font-size="8" fill="rgba(255,255,255,0.7)">创造</text>
+          <text x="17" y="41" text-anchor="end" font-size="8" fill="rgba(255,255,255,0.7)">技术</text>
+        </svg>
+      </div>
+    </div>
+
+    <!-- 右侧内容 -->
+    <div class="content-area">
+      <!-- 欢迎语 -->
+      <div class="welcome-text">Hi, I'm pipi</div>
+
+      <!-- 搜索框 -->
+      <div class="search-bar" id="search-bar-wrap">
+        <!-- 搜索引擎选择器 -->
+        <div class="engine-selector" id="engine-selector">
+          <button class="engine-btn" id="engine-btn" onclick="toggleEngineMenu(event)">
+            <span class="engine-icon" id="engine-icon">🔵</span>
+            <span id="engine-name">Bing</span>
+            <span class="engine-arrow">▼</span>
+          </button>
+          <div class="engine-dropdown" id="engine-dropdown">
+            <div class="engine-option active" onclick="selectEngine('bing')" id="opt-bing">
+              <span class="opt-icon">🔵</span>
+              <span class="opt-name">Bing</span>
+              <span class="opt-check" id="check-bing">✓</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('google')" id="opt-google">
+              <span class="opt-icon">🌐</span>
+              <span class="opt-name">Google</span>
+              <span class="opt-check" id="check-google" style="display:none">✓</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('baidu')" id="opt-baidu">
+              <span class="opt-icon">🔴</span>
+              <span class="opt-name">百度</span>
+              <span class="opt-check" id="check-baidu" style="display:none">✓</span>
+            </div>
+            <div class="engine-divider"></div>
+            <div class="engine-option" onclick="selectEngine('yandex')" id="opt-yandex">
+              <span class="opt-icon">🟡</span>
+              <span class="opt-name">Yandex</span>
+              <span class="opt-check" id="check-yandex" style="display:none">✓</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('duckduckgo')" id="opt-duckduckgo">
+              <span class="opt-icon">🦆</span>
+              <span class="opt-name">DuckDuckGo</span>
+              <span class="opt-check" id="check-duckduckgo" style="display:none">✓</span>
+            </div>
+            <div class="engine-divider"></div>
+            <div class="engine-option" onclick="selectEngine('bilibili')" id="opt-bilibili">
+              <span class="opt-icon">📺</span>
+              <span class="opt-name">哔哩哔哩</span>
+              <span class="opt-check" id="check-bilibili" style="display:none">✓</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('github')" id="opt-github">
+              <span class="opt-icon">🐙</span>
+              <span class="opt-name">GitHub</span>
+              <span class="opt-check" id="check-github" style="display:none">✓</span>
+            </div>
+            <div class="engine-option" onclick="selectEngine('zhihu')" id="opt-zhihu">
+              <span class="opt-icon">🔷</span>
+              <span class="opt-name">知乎</span>
+              <span class="opt-check" id="check-zhihu" style="display:none">✓</span>
+            </div>
+          </div>
+        </div>
+        <input class="search-input" type="text" id="search-input" placeholder="搜索一下..." onkeydown="if(event.key==='Enter')doSearch()"/>
+        <button class="search-btn" onclick="doSearch()"><i class="mdi mdi-magnify"></i></button>
+      </div>
+
+      <!-- 格言 -->
+      <div class="motto">
+        <span style="color:rgba(255,255,255,0.5)">"</span>
+        <span class="motto-char">车</span>
+        <span class="motto-char">技</span>
+        <span class="motto-char">不</span>
+        <span class="motto-char">封</span>
+        <span class="motto-char">顶</span>
+        <span class="motto-sep">，</span>
+        <span class="motto-char">代</span>
+        <span class="motto-char">码</span>
+        <span class="motto-char">无</span>
+        <span class="motto-sep">|</span>
+        <span class="motto-char">止</span>
+        <span class="motto-char">境</span>
+        <span style="color:rgba(255,255,255,0.5)">"</span>
+      </div>
+
+      <!-- 项目区 -->
+      <div class="section-label">
+        <i class="mdi mdi-webhook"></i> 部署项目
+      </div>
+      <div class="projects-grid" id="projects-grid">
+        <!-- 由 JS 渲染 -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 项目二级子页面 -->
+<div class="project-subpage" id="project-subpage">
+  <div class="project-subpage-inner">
+    <button class="project-subpage-back" onclick="closeProjectSubpage()">
+      <i class="mdi mdi-arrow-left"></i> 返回
+    </button>
+    <div class="project-subpage-thumb" id="psp-thumb"></div>
+    <div class="project-subpage-body">
+      <div class="project-subpage-title" id="psp-title"></div>
+      <div class="project-subpage-sub" id="psp-sub"></div>
+      <div class="project-subpage-desc" id="psp-desc"></div>
+      <div class="project-subpage-actions">
+        <a class="project-subpage-link" id="psp-link" href="#" target="_blank">
+          <i class="mdi mdi-open-in-new"></i> 前往项目
+        </a>
+        <a class="project-subpage-download" id="psp-download" href="#" download>
+          <i class="mdi mdi-download"></i> 下载
+        </a>
+      </div>
+      <div class="project-subpage-tools" id="psp-tools" style="display:none;">
+        <div class="project-subpage-tools-title">
+          <i class="mdi mdi-package-variant-closed"></i> 工具列表
+        </div>
+        <div class="project-subpage-tools-list" id="psp-tools-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+// ─────────────── 数据 ───────────────
+const PROJECTS = [
+  {
+    title: '飞车代码数据库',
+    sub: '热爱飞车',
+    href: 'https://pipi521522.github.io/shewo-club/',
+    emoji: '🚀',
+    desc: '记录QQ飞车相关逆向研究、代码数据和工具集合，热爱飞车的玩家必看！',
+    thumb: null,
+    thumbEmoji: '🏎️',
+    download: null
+  },
+  {
+    title: 'Speed Hack工具',
+    sub: '飞车辅助开发',
+    href: '#',
+    emoji: '⚡',
+    desc: 'QQ飞车速度修改工具，支持F1快捷键触发，持续迭代更新中。',
+    thumb: null,
+    thumbEmoji: '⚡',
+    download: 'downloads/SpeedHack.zip'
+  },
+  {
+    title: 'pipi补智工具',
+    sub: '实用小工具箱',
+    href: '#',
+    emoji: '🛠️',
+    desc: '精选实用Windows小工具合集，涵盖系统优化、下载工具、图像工具等，持续更新。',
+    thumb: null,
+    thumbEmoji: '🛠️',
+    download: null,
+    tools: [
+      { name: 'Windows系统更新-安全组件_一键统管_x64.exe', size: '2.9M' },
+      { name: '内核环境清理重塑工具v8.1.exe', size: '8.0M' },
+      { name: '电脑图像工具箱1.5.20160124.exe', size: '181M' },
+      { name: '迅雷v11.1.12.1692最终版（魔改版）.zip', size: '65M' },
+      { name: '迅雷本地精简版.zip', size: '95M' },
+      { name: '重装系统.zip', size: '84M' },
+      { name: '音乐软件.rar', size: '11M' }
+    ]
+  },
+  {
+    title: 'DLL注入器',
+    sub: '绕过TP保护',
+    href: '#',
+    emoji: '💉',
+    desc: '针对受TP保护游戏的DLL注入工具，持续攻克技术难关中。',
+    thumb: null,
+    thumbEmoji: '💉',
+    download: 'downloads/DLLInjector.zip'
+  },
+  {
+    title: '竖屏视频项目',
+    sub: '4K HEVC创作',
+    href: '#',
+    emoji: '🎬',
+    desc: '基于C001-C009素材制作的竖屏无损病毒视频，FFmpeg全流程处理。',
+    thumb: null,
+    thumbEmoji: '🎬',
+    download: null
+  },
+  {
+    title: 'SnakeNest启动器',
+    sub: 'Tkinter GUI',
+    href: '#',
+    emoji: '🐍',
+    desc: 'Python Tkinter编写的游戏工具启动器，界面简洁，功能集中。',
+    thumb: null,
+    thumbEmoji: '🐍',
+    download: 'downloads/SnakeNest_Launcher.exe'
+  },
+  {
+    title: 'netbios.dll逆向',
+    sub: 'Send/Recv Hook',
+    href: '#',
+    emoji: '🔍',
+    desc: '对QQ飞车netbios.dll进行逆向分析，更新Send/Recv地址，遵循5文件部署规则。',
+    thumb: null,
+    thumbEmoji: '🔍',
+    download: 'downloads/netbios_hook.zip'
+  },
+  {
+    title: '个人主页',
+    sub: '就是这里',
+    href: '#',
+    emoji: '🏠',
+    desc: '你正在访问的这个页面，用纯HTML/CSS/JS搭建，无框架依赖。',
+    thumb: null,
+    thumbEmoji: '🏠',
+    download: null
+  },
+];
+
+// ─────────────── 渲染项目卡片 ───────────────
+function renderProjects() {
+  const grid = document.getElementById('projects-grid');
+  grid.innerHTML = PROJECTS.map((p, i) => `
+    <div class="project-card" id="card-${i}">
+      <button class="project-edit-btn" onclick="editProject(${i})" title="编辑"><i class="mdi mdi-pencil"></i></button>
+      <button class="project-edit-save" onclick="saveProjectEdit(${i})" title="保存"><i class="mdi mdi-check"></i></button>
+      <div class="project-thumb-placeholder">${p.thumbEmoji}</div>
+      <div class="project-body">
+        <div class="project-title" id="ptitle-${i}" contenteditable="false">${p.title}</div>
+        <div class="project-sub" id="psub-${i}" contenteditable="false">${p.sub}</div>
+      </div>
+      <div class="project-actions">
+        <a class="project-link" href="${p.href}" target="_blank">${p.emoji} 前往</a>
+        <button class="project-open" onclick="openProjectSubpage(${i})" title="打开详情">
+          <i class="mdi mdi-open-in-new"></i>
+        </button>
+        <button class="project-expand" onclick="toggleDetail(${i})" id="expand-btn-${i}">
+          <i class="mdi mdi-chevron-down"></i>
+        </button>
+      </div>
+      <div class="project-detail" id="detail-${i}">${p.desc}</div>
+    </div>
+  `).join('');
+}
+loadProjectEdits();
+
+function toggleDetail(i) {
+  const d = document.getElementById('detail-' + i);
+  const b = document.getElementById('expand-btn-' + i);
+  d.classList.toggle('show');
+  b.classList.toggle('open');
+}
+function editProject(i) {
+  const card = document.getElementById('card-' + i);
+  const title = document.getElementById('ptitle-' + i);
+  const sub = document.getElementById('psub-' + i);
+  title.contentEditable = 'true';
+  sub.contentEditable = 'true';
+  card.classList.add('editing');
+  title.focus();
+}
+
+function saveProjectEdit(i) {
+  const card = document.getElementById('card-' + i);
+  const title = document.getElementById('ptitle-' + i);
+  const sub = document.getElementById('psub-' + i);
+  title.contentEditable = 'false';
+  sub.contentEditable = 'false';
+  card.classList.remove('editing');
+  // 更新 PROJECTS 数组
+  PROJECTS[i].title = title.textContent;
+  PROJECTS[i].sub = sub.textContent;
+  // 保存到 localStorage
+  try {
+    const saved = JSON.parse(localStorage.getItem('pipi_home_projects') || '{}');
+    saved[i] = { title: PROJECTS[i].title, sub: PROJECTS[i].sub };
+    localStorage.setItem('pipi_home_projects', JSON.stringify(saved));
+  } catch(e) {}
+}
+
+function loadProjectEdits() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('pipi_home_projects') || '{}');
+    for (const i in saved) {
+      if (PROJECTS[i]) {
+        if (saved[i].title) PROJECTS[i].title = saved[i].title;
+        if (saved[i].sub)   PROJECTS[i].sub   = saved[i].sub;
+      }
+    }
+  } catch(e) {}
+  renderProjects();
+}
+
+function openProjectSubpage(i) {
+  const p = PROJECTS[i];
+  if (!p) return;
+  document.getElementById('psp-thumb').textContent = p.thumbEmoji || '📁';
+  document.getElementById('psp-title').textContent = p.title;
+  document.getElementById('psp-sub').textContent = p.sub;
+  document.getElementById('psp-desc').textContent = p.desc;
+  const link = document.getElementById('psp-link');
+  link.href = p.href || '#';
+  if (!p.href || p.href === '#') link.style.display = 'none';
+  else link.style.display = '';
+  const dl = document.getElementById('psp-download');
+  if (p.download) {
+    dl.href = p.download;
+    dl.download = p.download.split('/').pop();
+    dl.style.display = '';
+  } else {
+    dl.style.display = 'none';
+  }
+  // 渲染工具列表
+  const toolsWrap = document.getElementById('psp-tools');
+  const toolsList = document.getElementById('psp-tools-list');
+  toolsList.innerHTML = '';
+  if (p.tools && p.tools.length > 0) {
+    toolsWrap.style.display = '';
+    p.tools.forEach(t => {
+      const item = document.createElement('div');
+      item.className = 'tool-item';
+      item.innerHTML = `
+        <span class="tool-item-name" title="${t.name}">${t.name}</span>
+        <span class="tool-item-meta">
+          <span class="tool-item-size">${t.size}</span>
+          <a class="tool-item-dl" href="downloads/${t.name}" download>
+            <i class="mdi mdi-download"></i> 下载
+          </a>
+        </span>`;
+      toolsList.appendChild(item);
+    });
+  } else {
+    toolsWrap.style.display = 'none';
+  }
+  document.getElementById('project-subpage').classList.add('show');
+}
+
+function closeProjectSubpage() {
+  const sp = document.getElementById('project-subpage');
+  sp.classList.remove('show');
+}
+
+
+// ─────────────── 时钟 ───────────────
+const WEEKS = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+function updateClock() {
+  const now = new Date();
+  const h = String(now.getHours()).padStart(2,'0');
+  const m = String(now.getMinutes()).padStart(2,'0');
+  const s = String(now.getSeconds()).padStart(2,'0');
+  document.getElementById('clock-time').textContent = `${h} : ${m} : ${s}`;
+  const y = now.getFullYear();
+  const mo = String(now.getMonth()+1).padStart(2,'0');
+  const d = String(now.getDate()).padStart(2,'0');
+  const w = WEEKS[now.getDay()];
+  document.getElementById('clock-date').textContent = `${y} 年 ${mo} 月 ${d} 日 ${w}`;
+}
+setInterval(updateClock, 1000);
+updateClock();
+
+// ─────────────── 搜索引擎 ───────────────
+const ENGINES = {
+  bing:       { name: 'Bing',       icon: '🔵', url: 'https://www.bing.com/search?q=' },
+  google:     { name: 'Google',     icon: '🌐', url: 'https://www.google.com/search?q=' },
+  baidu:      { name: '百度',       icon: '🔴', url: 'https://www.baidu.com/s?wd=' },
+  yandex:     { name: 'Yandex',     icon: '🟡', url: 'https://yandex.com/search/?text=' },
+  duckduckgo: { name: 'DuckDuckGo', icon: '🦆', url: 'https://duckduckgo.com/?q=' },
+  bilibili:   { name: '哔哩哔哩',   icon: '📺', url: 'https://search.bilibili.com/all?keyword=' },
+  github:     { name: 'GitHub',     icon: '🐙', url: 'https://github.com/search?q=' },
+  zhihu:      { name: '知乎',       icon: '🔷', url: 'https://www.zhihu.com/search?type=content&q=' },
+};
+let currentEngine = 'bing';
+
+function selectEngine(key) {
+  // 取消旧选中
+  const oldOpt = document.getElementById('opt-' + currentEngine);
+  const oldCheck = document.getElementById('check-' + currentEngine);
+  if(oldOpt) oldOpt.classList.remove('active');
+  if(oldCheck) oldCheck.style.display = 'none';
+  // 设置新选中
+  currentEngine = key;
+  const e = ENGINES[key];
+  document.getElementById('engine-icon').textContent = e.icon;
+  document.getElementById('engine-name').textContent = e.name;
+  const newOpt = document.getElementById('opt-' + key);
+  const newCheck = document.getElementById('check-' + key);
+  if(newOpt) newOpt.classList.add('active');
+  if(newCheck) newCheck.style.display = '';
+  // 更新搜索框 placeholder
+  document.getElementById('search-input').placeholder = '在 ' + e.name + ' 中搜索...';
+  closeEngineMenu();
+}
+
+function toggleEngineMenu(e) {
+  e.stopPropagation();
+  const dd = document.getElementById('engine-dropdown');
+  const btn = document.getElementById('engine-btn');
+  const isOpen = dd.classList.contains('show');
+  dd.classList.toggle('show', !isOpen);
+  btn.classList.toggle('open', !isOpen);
+}
+
+function closeEngineMenu() {
+  document.getElementById('engine-dropdown').classList.remove('show');
+  document.getElementById('engine-btn').classList.remove('open');
+}
+
+document.addEventListener('click', function(e) {
+  if(!document.getElementById('engine-selector').contains(e.target)) {
+    closeEngineMenu();
+  }
+});
+
+function doSearch() {
+  const q = document.getElementById('search-input').value.trim();
+  if(q) {
+    const url = ENGINES[currentEngine].url + encodeURIComponent(q);
+    window.open(url, '_blank');
+  }
+}
+
+// ─────────────── 视频背景开关 ───────────────
+function toggleVideo(cb) {
+  const video = document.getElementById('bg-video');
+  const bg = document.getElementById('bg-gradient');
+  const app = document.querySelector('.app-wrap');
+  const label = document.getElementById('mode-label');
+  
+  if(cb.checked) {
+    // 沉浸模式：全屏显示背景
+    app.classList.add('hidden');
+    if(label) label.textContent = '退出沉浸';
+  } else {
+    // 正常模式：显示UI
+    app.classList.remove('hidden');
+    if(label) label.textContent = '沉浸模式';
+  }
+}
+
+// 视频加载失败时使用渐变背景
+document.addEventListener('DOMContentLoaded', function() {
+  const video = document.getElementById('bg-video');
+  const bg = document.getElementById('bg-gradient');
+  
+  if(video) {
+    video.addEventListener('error', function() {
+      video.style.display = 'none';
+      bg.style.display = 'block';
+    });
+    
+    // 视频加载成功时隐藏渐变背景
+    video.addEventListener('loadeddata', function() {
+      bg.style.display = 'none';
+    });
+  }
+});
+
+// ─────────────── 音乐播放器 ───────────────
+const PLAYLIST = [];
+let trackIdx = 0;
+let isPlaying = false;
+let playlistReady = false;
+const PLAYLIST_SIZE = 30;
+const CORS = 'https://api.codetabs.com/v1/proxy?quest=';
+
+// 获取热歌列表（Deezer 30秒预览，CDN直链无CORS问题）
+async function fetchPlaylist() {
+  if (playlistReady) return;
+  document.getElementById('song-title').textContent = '🎵 加载中...';
+  document.getElementById('song-artist').textContent = '正在获取歌曲';
+  try {
+    // 获取中文热歌
+    const url = encodeURIComponent('https://api.deezer.com/playlist/3167750882/tracks&limit=' + PLAYLIST_SIZE);
+    const resp = await fetch(CORS + url);
+    const data = await resp.json();
+    PLAYLIST.length = 0;
+    (data.data || []).forEach(t => {
+      if (t.preview) {
+        PLAYLIST.push({ title: t.title, artist: t.artist.name, src: t.preview });
+      }
+    });
+    if (PLAYLIST.length > 0) {
+      playlistReady = true;
+      trackIdx = 0;
+      loadTrack(0);
+    }
+  } catch(e) {
+    document.getElementById('song-title').textContent = '❌ 加载失败';
+    document.getElementById('song-artist').textContent = '请检查网络';
+  }
+}
+
+function loadTrack(idx) {
+  const audio = document.getElementById('audio-player');
+  const t = PLAYLIST[idx];
+  document.getElementById('song-title').textContent = t.title;
+  document.getElementById('song-artist').textContent = t.artist;
+  audio.src = t.src;
+  audio.load();
+  if (isPlaying) audio.play().catch(()=>{});
+}
+
+function togglePlay() {
+  const audio = document.getElementById('audio-player');
+  const icon = document.getElementById('play-icon');
+  if (!playlistReady) { fetchPlaylist().then(()=>{}); return; }
+  if (isPlaying) {
+    audio.pause();
+    icon.className = 'mdi mdi-play';
+  } else {
+    audio.play().catch(()=>{});
+    icon.className = 'mdi mdi-pause';
+  }
+  isPlaying = !isPlaying;
+}
+
+function musicPrev() {
+  if (!playlistReady) return;
+  trackIdx = (trackIdx - 1 + PLAYLIST.length) % PLAYLIST.length;
+  loadTrack(trackIdx);
+}
+function musicNext() {
+  if (!playlistReady) return;
+  trackIdx = (trackIdx + 1) % PLAYLIST.length;
+  loadTrack(trackIdx);
+}
+function toggleMusic() { togglePlay(); }
+
+// 播放结束后自动切下一首
+document.getElementById('audio-player').addEventListener('ended', () => {
+  if (playlistReady) musicNext();
+});
+
+// 预加载播放列表
+fetchPlaylist();
+// ─────────────── Canvas 粒子 ───────────────
+(function() {
+  const canvas = document.getElementById('canvas-particles');
+  const ctx = canvas.getContext('2d');
+  let W, H, particles = [], mouse = { x: -9999, y: -9999 };
+  const N = 80;
+
+  function resize() {
+    const rect = canvas.getBoundingClientRect();
+    W = canvas.width  = rect.width  || window.innerWidth  * 0.99;
+    H = canvas.height = rect.height || window.innerHeight * 0.966;
+  }
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x = Math.random() * W;
+      this.y = Math.random() * H;
+      this.r = Math.random() * 2 + 0.5;
+      this.vx = (Math.random() - 0.5) * 0.5;
+      this.vy = (Math.random() - 0.5) * 0.5;
+      this.alpha = Math.random() * 0.5 + 0.1;
+      const neonColors = ['rgba(255,45,149,', 'rgba(0,240,255,', 'rgba(180,0,255,'];
+      this.color = neonColors[Math.floor(Math.random()*neonColors.length)] + this.alpha + ')';
+    }
+    update() {
+      this.x += this.vx;
+      this.y += this.vy;
+      const dx = this.x - mouse.x, dy = this.y - mouse.y;
+      const dist = Math.sqrt(dx*dx + dy*dy);
+      if (dist < 80) {
+        this.x += dx/dist * 1.5;
+        this.y += dy/dist * 1.5;
+      }
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI*2);
+      ctx.fillStyle = this.color;
+      ctx.fill();
+    }
+  }
+
+  function init() {
+    resize();
+    particles = Array.from({length: N}, () => new Particle());
+  }
+
+  function drawLines() {
+    for (let i = 0; i < N; i++) {
+      for (let j = i+1; j < N; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        if (d < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          const lineA = 0.18 * (1 - d / 120);
+          ctx.strokeStyle = `rgba(255,45,149,${lineA})`;
+          ctx.lineWidth = 0.7;
+          ctx.stroke();
+        }
+      }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawLines();
+    requestAnimationFrame(animate);
+  }
+
+  window.addEventListener('resize', () => { resize(); particles.forEach(p => p.reset()); });
+  window.addEventListener('mousemove', e => {
+    const rect = canvas.getBoundingClientRect();
+    mouse.x = e.clientX - rect.left;
+    mouse.y = e.clientY - rect.top;
+  });
+  window.addEventListener('mouseleave', () => { mouse.x = -9999; mouse.y = -9999; });
+
+  init();
+  animate();
+
+})();
+
+// ─────────────── 管理界面 ───────────────
+const ADMIN_FILES = [
+  { name: 'SpeedHack.zip',      size: '??? KB', date: '待更新' },
+  { name: 'pipi_tools.exe',      size: '??? KB', date: '待更新' },
+  { name: 'DLLInjector.zip',    size: '??? KB', date: '待更新' },
+  { name: 'SnakeNest_Launcher.exe', size: '??? KB', date: '待更新' },
+  { name: 'netbios_hook.zip',    size: '??? KB', date: '待更新' },
+];
+const ADMIN_PWD = 'nmsl000...';
+
+function openAdminModal() {
+  // 如果已经解锁，直接打开管理面板
+  if (document.body.classList.contains('admin-mode')) {
+    openAdminPanel();
+    return;
+  }
+  document.getElementById('pwd-modal').classList.add('show');
+  document.getElementById('pwd-input').value = '';
+  document.getElementById('pwd-error').classList.remove('show');
+  setTimeout(function(){ document.getElementById('pwd-input').focus(); }, 100);
+}
+function closePwdModal() {
+  document.getElementById('pwd-modal').classList.remove('show');
+  document.getElementById('pwd-input').value = '';
+  document.getElementById('pwd-error').classList.remove('show');
+}
+function closeAdminModal() {
+  document.getElementById('admin-modal').classList.remove('show');
+  // 可选：退出管理时保留admin-mode，让编辑功能继续使用
+  // document.body.classList.remove('admin-mode');
+}
+
+function exitAdminMode() {
+  document.body.classList.remove('admin-mode');
+  closeAdminModal();
+}
+function checkAdminPwd() {
+  const v = document.getElementById('pwd-input').value;
+  if (v === ADMIN_PWD) {
+    closePwdModal();
+    document.body.classList.add('admin-mode');
+    openAdminPanel();
+  } else {
+    document.getElementById('pwd-error').classList.add('show');
+    document.getElementById('pwd-input').value = '';
+    document.getElementById('pwd-input').focus();
+  }
+}
+function openAdminPanel() {
+  renderAdminFiles();
+  document.getElementById('admin-modal').classList.add('show');
+}
+function renderAdminFiles() {
+  const list = document.getElementById('file-list');
+  if (ADMIN_FILES.length === 0) {
+    list.innerHTML = '<div class="no-files">暂无文件，请上传后联系pipi更新列表</div>';
+    return;
+  }
+  let html = '';
+  for (let i = 0; i < ADMIN_FILES.length; i++) {
+    const f = ADMIN_FILES[i];
+    html += '<div class="file-item">' +
+      '<span class="file-icon">&#128196;</span>' +
+      '<div class="file-info">' +
+        '<div class="file-name">' + f.name + '</div>' +
+        '<div class="file-meta">' + f.size + ' · ' + f.date + '</div>' +
+      '</div>' +
+      '<button class="file-del" onclick="requestDelete(' + i + ')">删除</button>' +
+    '</div>';
+  }
+  list.innerHTML = html;
+}
+function requestDelete(idx) {
+  const f = ADMIN_FILES[idx];
+  if (!confirm('确认删除「' + f.name + '」？\n\n删除后请告诉pipi：删除 downloads/' + f.name)) return;
+  const log = document.getElementById('admin-log');
+  log.classList.add('show');
+  const now = new Date();
+  const ts = now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+  const entry = document.createElement('div');
+  entry.className = 'admin-log-entry';
+  entry.innerHTML = '<span class="admin-log-time">[' + ts + ']</span> 待删除：' + f.name + '（请告知pipi执行）';
+  log.appendChild(entry);
+  const btns = document.querySelectorAll('.file-del');
+  if (btns[idx]) { btns[idx].textContent = '待删除'; btns[idx].classList.add('disabled'); btns[idx].disabled = true; }
+}
+
+
+  // ========== GitHub API 文件管理 ==========
+  const GH_REPO = 'pipi521522/pipi-home';
+  const GH_BRANCH = 'master';
+
+  function loadToken() {
+    return localStorage.getItem('gh_token') || '';
+  }
+  function saveToken() {
+    const tok = document.getElementById('token-input').value.trim();
+    const st = document.getElementById('token-status');
+    if (!tok) { st.style.color = '#ff2d95'; st.textContent = '请输入 Token'; return; }
+    localStorage.setItem('gh_token', tok);
+    st.style.color = '#00f0ff'; st.textContent = '✅ Token 已保存';
+    document.getElementById('token-input').value = '';
+    renderAdminFiles();
+  }
+  async function apiReq(path, method, body) {
+    const tok = loadToken();
+    const hd = { 'Authorization': 'token ' + tok, 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'pipi-home' };
+    const opt = { method: method, headers: hd };
+    if (body) opt.body = JSON.stringify(body);
+    const resp = await fetch('https://api.github.com' + path, opt);
+    const txt = await resp.text();
+    let js = null;
+    try { js = JSON.parse(txt); } catch(e) {}
+    return { ok: resp.ok, status: resp.status, data: js, text: txt };
+  }
+  async function renderAdminFiles() {
+    const list = document.getElementById('file-list');
+    const tok = loadToken();
+    if (!tok) { list.innerHTML = '<div class="no-files">请先输入并保存 GitHub Token</div>'; return; }
+    list.innerHTML = '<div class="no-files">加载中...</div>';
+    const r = await apiReq('/repos/' + GH_REPO + '/contents/downloads', 'GET');
+    if (!r.ok) { list.innerHTML = '<div class="no-files">读取失败（' + r.status + '）</div>'; return; }
+    const files = r.data;
+    if (!files || !files.length) { list.innerHTML = '<div class="no-files">downloads/ 暂无文件</div>'; return; }
+    let h = '';
+    for (const f of files) {
+      const sz = f.size > 1048576 ? (f.size/1048576).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB';
+      h += '<div class="file-item">' +
+        '<span class="file-icon">📄</span>' +
+        '<div class="file-info"><div class="file-name">' + f.name + '</div>' +
+        '<div class="file-meta">' + sz + '</div></div>' +
+        '<button class="file-del" onclick="deleteFile(\'' + f.name.replace("'", "\'") + '\',\'' + f.sha + '\')">删除</button>' +
+        '</div>';
+    }
+    list.innerHTML = h;
+  }
+  async function uploadFile() {
+    const tok = loadToken();
+    const st = document.getElementById('upload-status');
+    if (!tok) { st.style.color='#ff2d95'; st.textContent='请先保存 Token'; return; }
+    const fi = document.getElementById('file-input');
+    if (!fi.files.length) { st.style.color='#ff2d95'; st.textContent='请选择文件'; return; }
+    const file = fi.files[0];
+    if (file.size > 900000) { st.style.color='#ff2d95'; st.textContent='文件超过 900KB 限制，请用 GitHub 网页端上传'; return; }
+    st.style.color='#00f0ff'; st.textContent='上传中...';
+    const buf = await file.arrayBuffer();
+    let b64 = '';
+    const bytes = new Uint8Array(buf);
+    let bin = '';
+    for (let i = 0; i < bytes.length; i++) bin += String.fromCharCode(bytes[i]);
+    b64 = btoa(bin);
+    const r = await apiReq('/repos/' + GH_REPO + '/contents/downloads/' + encodeURIComponent(file.name), 'PUT', {
+      message: 'Upload ' + file.name,
+      content: b64,
+      branch: GH_BRANCH
+    });
+    if (r.ok) {
+      st.style.color='#00f0ff'; st.textContent='✅ 上传成功！';
+      fi.value = ''; renderAdminFiles();
+    } else {
+      st.style.color='#ff2d95'; st.textContent='上传失败（' + r.status + '）';
+    }
+  }
+  async function deleteFile(name, sha) {
+    if (!confirm('确认删除「' + name + '」？')) return;
+    const st = document.getElementById('upload-status');
+    const r = await apiReq('/repos/' + GH_REPO + '/contents/downloads/' + encodeURIComponent(name), 'DELETE', {
+      message: 'Delete ' + name,
+      sha: sha,
+      branch: GH_BRANCH
+    });
+    if (r.ok) { renderAdminFiles(); } 
+    else { alert('删除失败（' + r.status + '）'); }
+  }
+  // 打开管理面板时恢复 token 状态
+  const _orig_openAdminPanel = openAdminPanel;
+  openAdminPanel = function() {
+    const tok = loadToken();
+    const st = document.getElementById('token-status');
+    if (tok) { st.style.color='#00f0ff'; st.textContent='✅ Token 已保存'; }
+    renderAdminFiles();
+    document.getElementById('admin-modal').classList.add('show');
+  };
+  // ==========================================
+
+  </script>
+</body>
+</html>

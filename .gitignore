@@ -1,0 +1,16 @@
+# 备份文件
+*_backup.*
+
+# 下载目录（包含大文件）
+downloads/
+
+# Python缓存
+__pycache__/
+*.pyc
+
+# 日志文件
+*.log
+
+# 系统文件
+.DS_Store
+Thumbs.db
