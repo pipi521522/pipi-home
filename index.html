@@ -1673,7 +1673,30 @@ let isPlaying = false;
 let playlistReady = false;
 const PLAYLIST_SIZE = 20;
 
-// 获取网易云热歌榜（国内可用）
+// 加载本地音乐（优先使用）
+function loadLocalMusic() {
+  const titleEl = document.getElementById('song-title');
+  const artistEl = document.getElementById('song-artist');
+  if(titleEl) titleEl.textContent = '🎵 准备中...';
+  if(artistEl) artistEl.textContent = '正在加载本地音乐';
+  
+  // 本地音乐列表
+  const localList = [
+    { title: '爱琴海', artist: '周杰伦', src: 'music.mp3' }
+    // 可以继续添加更多本地音乐文件
+    // { title: '歌曲名', artist: '歌手', src: 'music2.mp3' }
+  ];
+  
+  PLAYLIST.length = 0;
+  localList.forEach(t => PLAYLIST.push(t));
+  playlistReady = true;
+  trackIdx = 0;
+  loadTrack(0);
+  if(titleEl) titleEl.textContent = '🎵 ' + localList[0].title;
+  if(artistEl) artistEl.textContent = localList[0].artist;
+}
+
+// 获取网易云热歌榜（本地音乐失败时使用）
 async function fetchPlaylist() {
   if (playlistReady) return;
   const titleEl = document.getElementById('song-title');
@@ -1698,7 +1721,7 @@ async function fetchPlaylist() {
       trackIdx = 0;
       loadTrack(0);
     } else {
-      // 备用：使用内置免费音乐
+      // 备用：使用免费音乐
       loadFallbackMusic();
     }
   } catch(e) {
@@ -1737,7 +1760,7 @@ function loadTrack(idx) {
 function togglePlay() {
   const audio = document.getElementById('audio-player');
   const icon = document.getElementById('play-icon');
-  if (!playlistReady) { fetchPlaylist().then(()=>{}); return; }
+  if (!playlistReady) { loadLocalMusic(); return; }
   if (isPlaying) {
     audio.pause();
     icon.className = 'mdi mdi-play';
@@ -1791,8 +1814,8 @@ document.getElementById('audio-player').addEventListener('ended', () => {
   if (playlistReady) musicNext();
 });
 
-// 预加载播放列表
-fetchPlaylist();
+// 预加载本地音乐
+loadLocalMusic();
 // ─────────────── Canvas 粒子 ───────────────
 (function() {
   const canvas = document.getElementById('canvas-particles');
