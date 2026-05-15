@@ -681,9 +681,18 @@
 
     /* 响应式 */
     @media (max-width: 768px) {
-      /* 允许页面滚动 */
+      /* 允许页面滚动 - 关键修复 */
       html, body { overflow-y: auto; height: auto; }
-      .app-wrap { overflow-y: auto; height: auto; min-height: 100vh; }
+      .app-wrap { 
+        position: relative !important; 
+        overflow-y: auto !important; 
+        height: auto !important; 
+        min-height: 100vh !important;
+        width: 100% !important;
+        top: 0 !important;
+        left: 0 !important;
+        border-radius: 0 !important;
+      }
       
       .app-wrap { padding: 0.5rem; }
       .sidebar { 
