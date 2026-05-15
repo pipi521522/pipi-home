@@ -1430,7 +1430,28 @@ const PROJECTS = [
     desc: 'QQ飞车速度修改工具，支持F1快捷键触发，持续迭代更新中。',
     thumb: null,
     thumbEmoji: '⚡',
-    download: 'downloads/SpeedHack.zip'
+    download: null,
+    tools: [
+      { name: '32位自动源码（万恶之源）.rar', size: '610K', downloadUrl: 'Speed Hack工具/32位自动源码（万恶之源）.rar' },
+      { name: 'CT加密.rar', size: '411K', downloadUrl: 'Speed Hack工具/CT加密.rar' },
+      { name: 'EncryptKart.7z', size: '8.7K', downloadUrl: 'Speed Hack工具/EncryptKart.7z' },
+      { name: 'SAV转DAT工具.rar', size: '12M', downloadUrl: 'Speed Hack工具/SAV转DAT工具.rar' },
+      { name: 'X64自动源码.rar', size: '26M', downloadUrl: 'Speed Hack工具/X64自动源码.rar' },
+      { name: 'ffdsafsd.vmp.exe', size: '21M', downloadUrl: 'Speed Hack工具/ffdsafsd.vmp.exe' },
+      { name: 'x64封包工具.zip', size: '24M', downloadUrl: 'Speed Hack工具/x64封包工具.zip' },
+      { name: '万能器.exe', size: '20M', downloadUrl: 'Speed Hack工具/万能器.exe' },
+      { name: '修改标题.exe', size: '5M', downloadUrl: 'Speed Hack工具/修改标题.exe' },
+      { name: '切断.exe', size: '5M', downloadUrl: 'Speed Hack工具/切断.exe' },
+      { name: '封包道具（无视更新）.rar', size: '12M', downloadUrl: 'Speed Hack工具/封包道具（无视更新）.rar' },
+      { name: '微.rar', size: '18K', downloadUrl: 'Speed Hack工具/微.rar' },
+      { name: '最全工具包.exe', size: '111M', downloadUrl: 'Speed Hack工具/最全工具包.exe' },
+      { name: '机器猫工具.exe', size: '61M', downloadUrl: 'Speed Hack工具/机器猫工具.exe' },
+      { name: '精易模块[v11.1.5].ec', size: '4M', downloadUrl: 'Speed Hack工具/精易模块[v11.1.5].ec' },
+      { name: '补丁探测器.rar', size: '52M', downloadUrl: 'Speed Hack工具/补丁探测器.rar' },
+      { name: '解包工具.7z', size: '857K', downloadUrl: 'Speed Hack工具/解包工具.7z' },
+      { name: '解除文件占用.exe', size: '5M', downloadUrl: 'Speed Hack工具/解除文件占用.exe' },
+      { name: '过黑（放Releasephysx27_64）.rar', size: '3.6M', downloadUrl: 'Speed Hack工具/过黑（放Releasephysx27_64）.rar' }
+    ]
   },
   {
     title: 'pipi补智工具',
@@ -1603,13 +1624,14 @@ function openProjectSubpage(i) {
   if (p.tools && p.tools.length > 0) {
     toolsWrap.style.display = '';
     p.tools.forEach(t => {
+      const dlUrl = t.downloadUrl ? t.downloadUrl : 'downloads/' + t.name;
       const item = document.createElement('div');
       item.className = 'tool-item';
       item.innerHTML = `
         <span class="tool-item-name" title="${t.name}">${t.name}</span>
         <span class="tool-item-meta">
           <span class="tool-item-size">${t.size}</span>
-          <a class="tool-item-dl" href="downloads/${t.name}" download>
+          <a class="tool-item-dl" href="${dlUrl}" download>
             <i class="mdi mdi-download"></i> 下载
           </a>
         </span>`;
