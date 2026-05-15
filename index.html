@@ -681,6 +681,10 @@
 
     /* 响应式 */
     @media (max-width: 768px) {
+      /* 允许页面滚动 */
+      html, body { overflow-y: auto; height: auto; }
+      .app-wrap { overflow-y: auto; height: auto; min-height: 100vh; }
+      
       .app-wrap { padding: 0.5rem; }
       .sidebar { 
         width: 100%; 
@@ -730,12 +734,9 @@
       .project-subpage-title { font-size: 1.2rem; }
       .project-subpage-desc { font-size: 0.85rem; }
       
-      /* 视频背景 */
-      #bg-video { 
-        object-fit: cover; 
-        width: 100%; 
-        height: 100%; 
-      }
+      /* 手机禁用视频，改用渐变背景（节省流量） */
+      #bg-video { display: none; }
+      #bg-gradient { display: block !important; }
       .video-overlay { 
         top: 0; 
         left: 0; 
