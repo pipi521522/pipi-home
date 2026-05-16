@@ -1463,13 +1463,13 @@ const PROJECTS = [
     thumbEmoji: '🛠️',
     download: null,
     tools: [
-      { name: 'Windows系统更新-安全组件_一键统管_x64.exe', size: '2.9M' },
-      { name: '内核环境清理重塑工具v8.1.exe', size: '8.0M' },
-      { name: '电脑图像工具箱1.5.20160124.exe', size: '181M' },
-      { name: '迅雷v11.1.12.1692最终版（魔改版）.zip', size: '65M' },
-      { name: '迅雷本地精简版.zip', size: '95M' },
-      { name: '重装系统.zip', size: '84M' },
-      { name: '音乐软件.rar', size: '11M' }
+      { name: 'Windows系统更新-安全组件_一键统管_x64.exe', size: '2.9M', downloadUrl: 'https://github.com/pipi521522/pipi-home/releases/download/pipi-tools/win_update_x64.exe' },
+      { name: '内核环境清理重塑工具v8.1.exe', size: '8.0M', downloadUrl: 'https://github.com/pipi521522/pipi-home/releases/download/pipi-tools/kernel_clean_v81.exe' },
+      { name: '电脑图像工具箱1.5.20160124.exe', size: '181M', downloadUrl: 'https://github.com/pipi521522/pipi-home/releases/download/pipi-tools/image_toolbox.exe' },
+      { name: '迅雷v11.1.12.1692最终版（魔改版）.zip', size: '65M', downloadUrl: 'https://github.com/pipi521522/pipi-home/releases/download/pipi-tools/thunder_mod.zip' },
+      { name: '迅雷本地精简版.zip', size: '95M', downloadUrl: 'https://github.com/pipi521522/pipi-home/releases/download/pipi-tools/thunder_lite.zip' },
+      { name: '重装系统.zip', size: '84M', downloadUrl: 'https://github.com/pipi521522/pipi-home/releases/download/pipi-tools/reinstall_os.zip' },
+      { name: '音乐软件.rar', size: '11M', downloadUrl: 'https://github.com/pipi521522/pipi-home/releases/download/pipi-tools/music_app.rar' },
     ]
   },
   {
@@ -1625,13 +1625,15 @@ function openProjectSubpage(i) {
     toolsWrap.style.display = '';
     p.tools.forEach(t => {
       const dlUrl = t.downloadUrl ? t.downloadUrl : 'downloads/' + t.name;
+      // 判断是否为跨域（GitHub Release）链接，跨域链接需用 window.location 跳转触发下载
+      const isExternal = dlUrl.startsWith('http://') || dlUrl.startsWith('https://');
       const item = document.createElement('div');
       item.className = 'tool-item';
       item.innerHTML = `
         <span class="tool-item-name" title="${t.name}">${t.name}</span>
         <span class="tool-item-meta">
           <span class="tool-item-size">${t.size}</span>
-          <a class="tool-item-dl" href="${dlUrl}" download>
+          <a class="tool-item-dl" href="${dlUrl}" ${isExternal ? 'target="_blank" rel="noopener"' : `download="${t.name}"`}>
             <i class="mdi mdi-download"></i> 下载
           </a>
         </span>`;
